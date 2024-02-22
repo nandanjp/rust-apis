@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use super::{
     abilities::Abilities,
     enums::{Gender, OriginGame, Stat, Type},
+    traits::IntoDocument,
 };
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -46,17 +47,19 @@ impl Pokemon {
             moves,
         }
     }
+}
 
+impl IntoDocument for Pokemon {
     fn into_doc(self) -> Document {
         doc! {
-            "pokedex_id": self.pokedex_id,
+            "pokedex_id": self.pokedex_id as u32,
             "name": self.name,
             "alternate_names": self.alternate_names.as_slice(),
-            "origin_gen": self.origin_gen,
-            "typ": self.typ,
-            "gender": self.gender,
-            "level": self.level,
-            "abilities": self.abilities,
+            "origin_gen": self.origin_gen.to_string(),
+            "typ": self.typ.to_string(),
+            "gender": self.gender.to_string(),
+            "level": self.level.map_or(100_u32, |l| l as u32),
+            "abilities": self.abilities.to_string(),
             "moves": self.moves,
         }
     }
