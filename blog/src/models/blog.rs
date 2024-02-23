@@ -1,6 +1,6 @@
 use crate::models::common::Order;
 use bson::oid::ObjectId;
-use bson::DateTime;
+use bson::{doc, DateTime};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
@@ -30,6 +30,17 @@ impl Blog {
             front_image: None,
         }
     }
+
+    // pub fn to_document(self) -> Document {
+    //     doc! {
+    //         "_id": self._id,
+    //         "title": self.title,
+    //         "username": self.username,
+    //         "markdown": self.markdown,
+    //         "createdAt": self.created_at,
+    //         "updatedAt": self.updated_at,
+    //     }
+    // }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -54,6 +65,7 @@ pub struct CommonBlogResponse {
     pub data: Option<Blog>,
     pub error_message: Option<String>,
 }
+
 #[skip_serializing_none]
 #[derive(Debug, Deserialize)]
 pub struct Pagination {

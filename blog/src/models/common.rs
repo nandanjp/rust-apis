@@ -1,6 +1,6 @@
 use crate::config::MongoConfig;
-use std::time::Duration;
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
 
 pub struct DatabaseConfig {
     pub uri: String,

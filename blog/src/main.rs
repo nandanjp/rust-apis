@@ -1,20 +1,21 @@
 use crate::config::Config;
 use crate::models::common::DatabaseConfig;
 use crate::routes::blog::{blog_by_id, create_blog, get_all_blogs};
+use crate::routes::image::{create_image, get_image_by_id, get_images};
 use axum::response::IntoResponse;
+use axum::routing::post;
 use axum::{routing::get, Router};
+use http::StatusCode;
 use http::{header, HeaderValue};
 use mongodb::options::ClientOptions;
 use mongodb::Client;
 use std::time::Duration;
-use axum::routing::post;
 use tower_http::limit::RequestBodyLimitLayer;
 use tower_http::set_header::SetResponseHeaderLayer;
 use tower_http::timeout::TimeoutLayer;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
-use http::StatusCode;
 
 mod config;
 mod models;
@@ -47,9 +48,20 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(|| async { "Server is healthy!" }))
-        .route("/api/blog", get(get_all_blogs))
-        .route("/api/blog", post(create_blog))
-        .route("/api/blog/:id", get(blog_by_id))
+        .nest(
+            "/api/blog",
+            Router::new()
+                .route("/", get(get_all_blogs))
+                .route("/", post(create_blog))
+                .route("/:id", get(blog_by_id)),
+        )
+        .nest(
+            "/api/image",
+            Router::new()
+                .route("/", get(get_images))
+                .route("/", post(create_image))
+                .route("/:id", get(get_image_by_id)),
+        )
         .layer(TimeoutLayer::new(Duration::from_secs(10)))
         .layer(RequestBodyLimitLayer::new(1024))
         .layer(TraceLayer::new_for_http())

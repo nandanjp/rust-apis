@@ -4,9 +4,10 @@ use axum::extract::{Path, Query, State};
 use axum::response::IntoResponse;
 use axum::Json;
 use bson::doc;
+use bson::oid::ObjectId;
 use futures::StreamExt;
 use http::StatusCode;
-use mongodb::options::{FindOneOptions, FindOptions};
+use mongodb::options::{FindOneOptions, FindOptions, InsertOneOptions};
 use mongodb::{Client, Collection};
 use serde_json::Value;
 
@@ -50,7 +51,7 @@ pub async fn get_all_blogs(
     )
 }
 
-pub async fn blog_by_id(State(client): State<Client>, id: Path<String>) -> impl IntoResponse {
+pub async fn blog_by_id(State(client): State<Client>, id: Path<ObjectId>) -> impl IntoResponse {
     let blog_coll: Collection<Blog> = client.database("blog_app").collection::<Blog>("blog");
     let blog = blog_coll
         .find_one(doc! {"_id": id.0.clone()}, FindOneOptions::default())
@@ -85,34 +86,136 @@ pub async fn blog_by_id(State(client): State<Client>, id: Path<String>) -> impl 
     }
 }
 
-pub async fn create_blog(State(client): State<Client>, Json(blog): Json<Value>) -> impl IntoResponse {
+pub async fn create_blog(
+    State(client): State<Client>,
+    Json(blog): Json<Value>,
+) -> impl IntoResponse {
     let cloned = blog.clone();
     let blog: CreateBlog = match serde_json::from_value(blog) {
         Ok(Some(blog)) => blog,
-        Ok(None) => return (
-            StatusCode::NOT_FOUND,
-            Json(CommonBlogResponse {
-                success: false,
-                data: None,
-                error_message: Some(format!("Could not create a blog from the body provided: {}", cloned)),
-            }),
-        ),
-        Err(err) => return (
-            StatusCode::NOT_FOUND,
-            Json(CommonBlogResponse {
-                success: false,
-                data: None,
-                error_message: Some(format!("Could not create a blog from the body provided: {}, err = {}", cloned, err)),
-            }),
-        )
+        Ok(None) => {
+            return (
+                StatusCode::NOT_FOUND,
+                Json(CommonBlogResponse {
+                    success: false,
+                    data: None,
+                    error_message: Some(format!(
+                        "Could not create a blog from the body provided: {}",
+                        cloned
+                    )),
+                }),
+            )
+        }
+        Err(err) => {
+            return (
+                StatusCode::NOT_FOUND,
+                Json(CommonBlogResponse {
+                    success: false,
+                    data: None,
+                    error_message: Some(format!(
+                        "Could not create a blog from the body provided: {}, err = {}",
+                        cloned, err
+                    )),
+                }),
+            )
+        }
     };
 
-    (
-        StatusCode::CREATED,
-        Json(CommonBlogResponse {
-            success: true,
-            data: Some(Blog::from_create(blog)),
-            error_message: None,
-        }),
-    )
+    let collections = match client
+        .database("blog_app")
+        .list_collection_names(None)
+        .await
+    {
+        Ok(names) => names,
+        Err(err) => {
+            return (
+                StatusCode::NOT_FOUND,
+                Json(CommonBlogResponse {
+                    success: false,
+                    data: None,
+                    error_message: Some(format!(
+                        "Failed to get a list of collection names in the database: {:#?}",
+                        err
+                    )),
+                }),
+            )
+        }
+    };
+
+    if collections
+        .into_iter()
+        .find(|name| *name == "blog")
+        .is_none()
+    {
+        match client
+            .database("blog_app")
+            .create_collection("blog", None)
+            .await
+        {
+            Ok(_) => tracing::debug!("Successfully created the blog collection"),
+            Err(err) => {
+                return (
+                    StatusCode::NOT_FOUND,
+                    Json(CommonBlogResponse {
+                        success: false,
+                        data: None,
+                        error_message: Some(format!(
+                            "Failed to create a blog collection in the blog_app database: {:#?}",
+                            err
+                        )),
+                    }),
+                )
+            }
+        }
+    }
+
+    let blog_coll: Collection<Blog> = client.database("blog_app").collection::<Blog>("blog");
+    let options = InsertOneOptions::default();
+    match blog_coll.insert_one(Blog::from_create(blog), options).await {
+        Ok(blog) => {
+            match blog_coll
+                .find_one(
+                    doc! {"_id": blog.inserted_id.clone()},
+                    FindOneOptions::default(),
+                )
+                .await
+            {
+                Ok(Some(blog)) => (
+                    StatusCode::CREATED,
+                    Json(CommonBlogResponse {
+                        success: true,
+                        data: Some(blog),
+                        error_message: None,
+                    }),
+                ),
+                Ok(None) => (
+                    StatusCode::NOT_FOUND,
+                    Json(CommonBlogResponse {
+                        success: false,
+                        data: None,
+                        error_message: Some(format!(
+                            "No blog exists for given id: {}",
+                            blog.inserted_id
+                        )),
+                    }),
+                ),
+                Err(err) => (
+                    StatusCode::NOT_FOUND,
+                    Json(CommonBlogResponse {
+                        success: false,
+                        data: None,
+                        error_message: Some(format!("Couldn't find any user due to {:#?}", err)),
+                    }),
+                ),
+            }
+        }
+        Err(err) => (
+            StatusCode::NOT_FOUND,
+            Json(CommonBlogResponse {
+                success: false,
+                data: None,
+                error_message: Some(format!("Couldn't find any user due to {:#?}", err)),
+            }),
+        ),
+    }
 }
