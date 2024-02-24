@@ -1,68 +1,107 @@
 use crate::models::common::Order;
 use bson::oid::ObjectId;
-use bson::{doc, DateTime};
+use bson::{doc, DateTime, Document};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Blog {
-    pub _id: ObjectId,
+    #[serde(rename = "_id")]
+    pub id: ObjectId,
     pub title: String,
     pub username: String,
     pub markdown: String,
     #[serde(rename = "frontImage")]
     pub front_image: Option<ObjectId>,
+    pub images: Vec<ObjectId>,
+    pub categories: Vec<ObjectId>,
     #[serde(rename = "createdAt")]
     pub created_at: DateTime,
     #[serde(rename = "updatedAt")]
     pub updated_at: DateTime,
 }
 
-impl Blog {
-    pub fn from_create(create: CreateBlog) -> Self {
-        Blog {
-            title: create.title,
-            username: create.username,
-            markdown: create.markdown,
-            created_at: DateTime::now(),
-            updated_at: DateTime::now(),
-            _id: ObjectId::new(),
-            front_image: None,
-        }
-    }
-
-    // pub fn to_document(self) -> Document {
-    //     doc! {
-    //         "_id": self._id,
-    //         "title": self.title,
-    //         "username": self.username,
-    //         "markdown": self.markdown,
-    //         "createdAt": self.created_at,
-    //         "updatedAt": self.updated_at,
-    //     }
-    // }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct CreateBlog {
     pub title: String,
     pub username: String,
     pub markdown: String,
+    #[serde(rename = "frontImage")]
+    pub front_image: Option<ObjectId>,
+    pub images: Option<Vec<ObjectId>>,
+    pub categories: Option<Vec<ObjectId>>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct UpdateBlog {
+    pub title: Option<String>,
+    pub username: Option<String>,
+    pub markdown: Option<String>,
+    #[serde(rename = "frontImage")]
+    pub front_image: Option<ObjectId>,
+    pub images: Option<Vec<ObjectId>>,
+    pub categories: Option<Vec<ObjectId>>,
+}
+
+impl Blog {
+    pub fn from_create(create: CreateBlog) -> Self {
+        Self {
+            title: create.title,
+            username: create.username,
+            markdown: create.markdown,
+            id: ObjectId::new(),
+            front_image: create.front_image.map(|image| image),
+            images: create.images.unwrap_or_default(),
+            categories: create.categories.unwrap_or_default(),
+            created_at: DateTime::now(),
+            updated_at: DateTime::now(),
+        }
+    }
+
+    pub fn update(self, update: UpdateBlog) -> Self {
+        Self {
+            title: update.title.unwrap_or(self.title),
+            username: update.username.unwrap_or(self.username),
+            markdown: update.markdown.unwrap_or(self.markdown),
+            front_image: update.front_image.or(self.front_image),
+            images: update.images.unwrap_or(self.images),
+            categories: update.categories.unwrap_or(self.categories),
+            id: self.id,
+            created_at: self.created_at,
+            updated_at: DateTime::now(),
+        }
+    }
+
+    pub fn into_document(self) -> Document {
+        doc! {
+            "_id": self.id,
+            "title": self.title,
+            "username": self.username,
+            "markdown": self.markdown,
+            "frontImage": self.front_image,
+            "images": self.images,
+            "categories": self.categories,
+            "createdAt": self.created_at,
+            "updatedAt": self.updated_at
+        }
+    }
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct ListBlogResponse {
     pub success: bool,
     pub data: Option<Vec<Blog>>,
+    #[serde(rename = "errorMessage")]
     pub error_message: Option<String>,
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct CommonBlogResponse {
     pub success: bool,
     pub data: Option<Blog>,
+    #[serde(rename = "errorMessage")]
     pub error_message: Option<String>,
 }
 

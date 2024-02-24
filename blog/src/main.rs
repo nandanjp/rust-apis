@@ -1,10 +1,15 @@
 use crate::config::Config;
 use crate::models::common::DatabaseConfig;
-use crate::routes::blog::{blog_by_id, create_blog, get_all_blogs};
-use crate::routes::image::{create_image, get_image_by_id, get_images};
+use crate::routes::blog::{create_blog, delete_blog, get_blog_by_id, get_blogs, update_blog};
+use crate::routes::category::{
+    create_category, delete_category, get_categories, get_category_by_id, update_category,
+};
+use crate::routes::image::{create_image, delete_image, get_image_by_id, get_images, update_image};
 use axum::response::IntoResponse;
-use axum::routing::post;
-use axum::{routing::get, Router};
+use axum::{
+    routing::{delete, get, post, put},
+    Router,
+};
 use http::StatusCode;
 use http::{header, HeaderValue};
 use mongodb::options::ClientOptions;
@@ -51,16 +56,29 @@ async fn main() {
         .nest(
             "/api/blog",
             Router::new()
-                .route("/", get(get_all_blogs))
+                .route("/", get(get_blogs))
                 .route("/", post(create_blog))
-                .route("/:id", get(blog_by_id)),
+                .route("/:id", get(get_blog_by_id))
+                .route("/:id", put(update_blog))
+                .route("/:id", delete(delete_blog)),
         )
         .nest(
             "/api/image",
             Router::new()
                 .route("/", get(get_images))
                 .route("/", post(create_image))
-                .route("/:id", get(get_image_by_id)),
+                .route("/:id", get(get_image_by_id))
+                .route("/:id", put(update_image))
+                .route("/:id", delete(delete_image)),
+        )
+        .nest(
+            "/api/category",
+            Router::new()
+                .route("/", get(get_categories))
+                .route("/", post(create_category))
+                .route("/:id", get(get_category_by_id))
+                .route("/:id", put(update_category))
+                .route("/:id", delete(delete_category)),
         )
         .layer(TimeoutLayer::new(Duration::from_secs(10)))
         .layer(RequestBodyLimitLayer::new(1024))
