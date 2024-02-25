@@ -14,6 +14,7 @@ clap = { version = "4.5.1", features = ["env", "derive"] }
 dotenv = { version = "0.15.0", features = ["clap"] }
 futures = "0.3.30"
 http = "1.0.0"
+isocountry = "0.3.2"
 jsonwebtoken = "9.2.0"
 mongodb = "2.8.1"
 reqwest = "0.11.24"

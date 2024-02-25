@@ -16,7 +16,6 @@ pub struct MongoConfig {
     min_pool_size: u32,
 }
 impl ConfigParser for MongoConfig {}
-
 impl MongoConfig {
     pub fn create_uri(&mut self) -> Option<()> {
         let password = self.uri_mongo.find("<password>").map(|start| start..start + "<password>".len())?;
