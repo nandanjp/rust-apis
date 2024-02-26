@@ -1,10 +1,10 @@
 use bson::DateTime;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
-use crate::models::enums::Rating;
+use crate::utils::enums::rating::Rating;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Review {
+pub struct AnimeReview {
     #[serde(rename = "_id")]
     pub id: ObjectId,
     pub has_spoiler: bool,
@@ -15,8 +15,8 @@ pub struct Review {
     pub acting_score: Rating,
     pub music_score: Rating,
     pub rewatch_score: Rating,
-    pub author_id: ObjectId,
-    pub show_id: ObjectId,
+    pub user_id: ObjectId, //user
+    pub anime_id: ObjectId, //anime
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }

@@ -1,7 +1,7 @@
 use bson::DateTime;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
-use crate::models::enums::Rating;
+use crate::utils::enums::rating::Rating;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AnimeEpisode {
@@ -10,7 +10,8 @@ pub struct AnimeEpisode {
     pub episode_number: u16,
     pub rating: Rating,
     pub release_date: DateTime,
-    pub anime_id: ObjectId,
+    pub anime_id: ObjectId, //anime
+    pub review_id: Vec<ObjectId>, //reviews
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }

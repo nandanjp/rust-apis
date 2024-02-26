@@ -1,7 +1,8 @@
 use bson::DateTime;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
-use crate::models::enums::{DramaGenres, Gender, OriginCountry, UserType};
+use crate::utils::enums::gender::Gender;
+use crate::utils::enums::user_type::UserType;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct User {

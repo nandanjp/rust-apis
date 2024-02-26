@@ -2,11 +2,11 @@ use bson::DateTime;
 use bson::oid::ObjectId;
 use isocountry::CountryCode;
 use serde::{Deserialize, Serialize};
-use crate::models::enums::Gender;
-use crate::models::show::Show;
+use crate::utils::enums::actor_type::ActorType;
+use crate::utils::enums::gender::Gender;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Actor {
+pub struct DramaActor {
     #[serde(rename = "_id")]
     pub id: ObjectId,
     pub first_name: String,
@@ -17,9 +17,11 @@ pub struct Actor {
     pub born: DateTime,
     pub age: u16,
     pub biography: String,
-    pub dramas: Vec<ObjectId>,
-    pub movies: Vec<ObjectId>,
-    pub articles: Vec<ObjectId>,
+    pub kind: ActorType,
+    pub produced: Vec<ObjectId>, //dramas
+    pub dramas: Vec<ObjectId>, //dramas
+    pub movies: Vec<ObjectId>, //dramas
+    pub articles: Vec<ObjectId>, //articles
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }

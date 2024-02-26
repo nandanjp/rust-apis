@@ -1,9 +1,4 @@
-pub mod actor;
-pub mod anime;
-pub mod article;
 pub mod auth;
-pub mod list;
-pub mod photo;
-pub mod review;
-pub mod show;
 pub mod user;
+pub mod anime;
+pub mod drama;

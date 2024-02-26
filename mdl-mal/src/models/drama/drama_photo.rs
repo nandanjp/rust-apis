@@ -3,12 +3,11 @@ use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Show {
+pub struct DramaPhoto {
     #[serde(rename = "_id")]
     pub id: ObjectId,
-    pub name: String,
-    pub established_date: DateTime,
-    pub anime: Vec<ObjectId>,
+    pub url: String,
+    pub show_id: ObjectId, //drama
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }

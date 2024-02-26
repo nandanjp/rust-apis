@@ -1,17 +1,14 @@
 use bson::DateTime;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
-use crate::models::enums::AnimeGenres;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Article {
+pub struct Studio {
     #[serde(rename = "_id")]
     pub id: ObjectId,
-    pub title: String,
-    pub user_id: ObjectId,
-    pub article: String,
-    pub show_id: ObjectId,
-    pub genres: Vec<AnimeGenres>,
+    pub name: String,
+    pub established_date: DateTime,
+    pub anime: Vec<ObjectId>, //anime
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }
