@@ -1,9 +1,0 @@
-pub mod anime;
-pub mod article;
-pub mod character;
-pub mod episode;
-pub mod list;
-pub mod photo;
-pub mod review;
-pub mod studio;
-pub mod voice_actor;
