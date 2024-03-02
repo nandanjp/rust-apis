@@ -1,0 +1,20 @@
+[package]
+name = "ecommerce"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = { version = "0.7.4", features = ["macros"] }
+bcrypt = "0.15.0"
+chrono = "0.4.34"
+http = "1.0.0"
+jsonwebtoken = "9.2.0"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.114"
+sqlx = { version = "0.7.3", features = ["runtime-tokio-native-tls", "tls-native-tls", "macros", "postgres", "uuid", "chrono", "json"] }
+thiserror = "1.0.57"
+tokio = { version = "1.36.0", features = ["full"] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
