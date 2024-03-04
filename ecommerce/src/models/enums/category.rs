@@ -35,10 +35,10 @@ impl SerializeEnum<CategoryError> for Category {
             Category::Headphones => "headphones",
             Category::VideoGames => "videogames",
             Category::Consoles => "consoles",
-            Category::MusicAlbums => "music_albums",
+            Category::MusicAlbums => "musicalbums",
             Category::Movies => "movies",
             Category::Figures => "figures",
-            Category::PlayingCards => "playing_cards",
+            Category::PlayingCards => "playingcards",
         }
     }
 
@@ -52,10 +52,10 @@ impl SerializeEnum<CategoryError> for Category {
             "headphones" => Ok(Category::Headphones),
             "video_games" => Ok(Category::VideoGames),
             "consoles" => Ok(Category::Consoles),
-            "music_albums" => Ok(Category::MusicAlbums),
+            "musicalbums" => Ok(Category::MusicAlbums),
             "movies" => Ok(Category::Movies),
             "figures" => Ok(Category::Figures),
-            "playing_cards" => Ok(Category::PlayingCards),
+            "playingcards" => Ok(Category::PlayingCards),
             _ => Err(CategoryError::InvalidCategory {
                 unknown: s.to_string(),
             }),

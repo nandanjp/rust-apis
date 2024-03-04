@@ -11,11 +11,11 @@ pub struct User {
     pub id: i32,
     pub username: String,
     pub email: String,
-    pub user_password: String,
-    pub user_address: String,
+    pub password: String,
+    pub address: String,
     pub users_role: UserRole,
     pub created_at: DateTime<Utc>,
-    pub update_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 impl IntoSerializable<UserSerializable> for User {
@@ -23,12 +23,12 @@ impl IntoSerializable<UserSerializable> for User {
         UserSerializable {
             user_id: self.id,
             username: self.username,
-            user_password: self.user_password,
+            password: self.password,
             email: self.email,
-            user_address: self.user_address,
+            address: self.address,
             users_role: String::from(self.users_role.to_string()),
             created_at: self.created_at.to_string(),
-            updated_at: self.update_at.to_string(),
+            updated_at: self.updated_at.to_string(),
         }
     }
 }
@@ -38,8 +38,8 @@ pub struct UserSerializable {
     pub user_id: i32,
     pub username: String,
     pub email: String,
-    pub user_password: String,
-    pub user_address: String,
+    pub password: String,
+    pub address: String,
     pub users_role: String,
     pub created_at: String,
     pub updated_at: String,

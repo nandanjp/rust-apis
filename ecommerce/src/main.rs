@@ -12,8 +12,8 @@ mod models;
 mod utils;
 
 use handlers::{
-    order::get_orders,
-    product::get_products,
+    order::{create_order, get_orders},
+    product::{create_product, get_products},
     review::get_reviews,
     user::{create_user, get_users},
 };
@@ -29,7 +29,7 @@ async fn main() {
         .init();
 
     let db_str = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "postgres://postgres:17012004@127.0.0.1:5433/ecommerce".to_string());
+        .unwrap_or_else(|_| "postgres://postgres:17012004@127.0.0.1:5432/ecommerce".to_string());
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .acquire_timeout(Duration::from_secs(3))
@@ -51,12 +51,22 @@ async fn main() {
                         .route("/", get(get_users))
                         .route("/", post(create_user)),
                 )
-                .nest("/product", Router::new().route("/", get(get_products)))
-                .nest("/order", Router::new().route("/", get(get_orders)))
+                .nest(
+                    "/product",
+                    Router::new()
+                        .route("/", get(get_products))
+                        .route("/", post(create_product)),
+                )
+                .nest(
+                    "/order",
+                    Router::new()
+                        .route("/", get(get_orders))
+                        .route("/", post(create_order)),
+                )
                 .nest("/review", Router::new().route("/", get(get_reviews))),
         );
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:5000")
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
         .await
         .expect("failed to bind a tcp listener to the port 5000");
     tracing::debug!("Server is now listening on port :5000");

@@ -11,7 +11,7 @@ use crate::{
 };
 
 pub async fn get_users(State(pool): State<PgPool>) -> impl IntoResponse {
-    let users: Vec<User> = match query_as("select id, username, email, user_password, user_address, users_role, created_at, update_at from users")
+    let users: Vec<User> = match query_as("select id, username, email, password, address, users_role, created_at, updated_at from users")
     .fetch_all(&pool)
     .await
     {
@@ -64,7 +64,7 @@ pub async fn create_user(
     };
 
     let user: User = match query!(
-        r#"insert into users (username, email, user_password, user_address, users_role) values ($1, $2, $3, $4, $5) returning id, username, email, user_password, user_address, created_at, users_role as "users_role!: UserRole""#,
+        r#"insert into users (username, email, password, address, users_role) values ($1, $2, $3, $4, $5) returning id, username, email, password, address, created_at, users_role as "users_role!: UserRole""#,
         user.username,
         user.email,
         new_pass,
@@ -78,11 +78,11 @@ pub async fn create_user(
             id: user.id,
             username: user.username,
             email: user.email,
-            user_password: user.user_password,
-            user_address: user.user_address,
+            password: user.password,
+            address: user.address,
             users_role: user.users_role,
             created_at: user.created_at.unwrap(),
-            update_at: user.created_at.unwrap(),
+            updated_at: user.created_at.unwrap(),
         },
         Err(err) => {
             return (

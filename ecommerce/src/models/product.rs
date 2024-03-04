@@ -11,8 +11,8 @@ pub struct Product {
     pub id: i32,
     pub title: String,
     pub description: String,
-    pub price: f32,
-    pub quantity_available: i32,
+    pub price: f64,
+    pub quantity: i32,
     pub category: Category,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -25,7 +25,7 @@ impl IntoSerializable<ProductSerializable> for Product {
             title: self.title,
             description: self.description,
             price: self.price,
-            quantity_available: self.quantity_available,
+            quantity: self.quantity,
             category: self.category.to_string().to_string(),
             created_at: self.created_at.to_string(),
             updated_at: self.updated_at.to_string(),
@@ -38,8 +38,8 @@ pub struct ProductSerializable {
     pub product_id: i32,
     pub title: String,
     pub description: String,
-    pub price: f32,
-    pub quantity_available: i32,
+    pub price: f64,
+    pub quantity: i32,
     pub category: String,
     pub created_at: String,
     pub updated_at: String,
@@ -50,7 +50,7 @@ pub struct CreateProduct {
     pub title: String,
     pub description: String,
     pub price: f64,
-    pub quantity_available: u64,
+    pub quantity: i32,
     pub category: Category,
 }
 
@@ -59,7 +59,7 @@ pub struct UpdateProduct {
     pub title: Option<String>,
     pub description: Option<String>,
     pub price: Option<f64>,
-    pub quantity_available: Option<f64>,
+    pub quantity: Option<i32>,
     pub category: Option<Category>,
 }
 

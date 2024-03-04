@@ -36,7 +36,7 @@ pub struct OrderSerializable {
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct CreateOrder {
-    pub customer: String,
+    pub customer_email: String,
     pub products: Vec<String>,
     pub destination: String,
 }
@@ -51,7 +51,7 @@ pub struct UpdateOrder {
 pub struct OrderResponse {
     pub success: bool,
     pub order: Option<OrderSerializable>,
-    pub error: String,
+    pub error: Option<String>,
 }
 
 #[derive(Serialize, Clone, Debug)]
