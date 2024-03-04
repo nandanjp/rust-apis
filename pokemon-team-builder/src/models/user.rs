@@ -1,31 +1,12 @@
-use mongodb::bson::doc;
-use serde::{Deserialize, Serialize};
+use chrono::{DateTime, Utc};
+use sqlx::prelude::FromRow;
 
-use super::traits::IntoDocument;
-
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, FromRow)]
 pub struct User {
-    name: String,
-    email: String,
-    password: String,
-}
-
-impl User {
-    pub fn new(name: String, email: String, password: String) -> Self {
-        User {
-            name,
-            email,
-            password,
-        }
-    }
-}
-
-impl IntoDocument for User {
-    fn into_doc(self) -> mongodb::bson::Document {
-        doc! {
-            "name": self.name,
-            "email": self.email,
-            "password": self.password,
-        }
-    }
+    pub id: i32,
+    pub name: String,
+    pub email: String,
+    pub password: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }

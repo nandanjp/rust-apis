@@ -1,66 +1,43 @@
-use mongodb::bson::{doc, oid::ObjectId, Document};
-use serde::{Deserialize, Serialize};
+use chrono::{DateTime, Utc};
+use sqlx::prelude::FromRow;
 
-use super::{
-    abilities::Abilities,
-    enums::{Gender, OriginGame, Stat, Type},
-    traits::IntoDocument,
-};
+use super::enums::{games::Game, region::Region, types::Type};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug, PartialEq, PartialOrd, FromRow)]
 pub struct Pokemon {
-    pokedex_id: u16,
-    name: String,
-    alternate_names: Vec<String>,
-    origin_gen: OriginGame,
-    typ: Type,
-    stat: Stat,
-    gender: Gender,
-    level: Option<u8>,
-    abilities: Abilities,
-    moves: Vec<ObjectId>,
+    pub id: i32,
+    pub name: String,
+    pub base_experience: Option<i32>,
+    pub height: i32,
+    pub weight: i32,
+    pub primary_ability: String,
+    pub secondary_ability: Option<String>,
+    pub hidden_ability: Option<String>,
+    pub is_main_series: bool,
+    pub pokedex: i32,
+    pub origin_region: Region,
+    pub games: Vec<Game>,
+    pub form_names: Vec<String>,
+    pub is_mythical: bool,
+    pub is_legendary: bool,
+    pub types: Vec<Type>,
+    pub stats: Vec<i32>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
-impl Pokemon {
-    fn new(
-        pokedex_id: u16,
-        name: String,
-        alternate_names: Vec<String>,
-        origin_gen: OriginGame,
-        typ: Type,
-        stat: Stat,
-        gender: Gender,
-        level: Option<u8>,
-        abilities: Abilities,
-        moves: Vec<ObjectId>,
-    ) -> Self {
-        Pokemon {
-            pokedex_id,
-            name,
-            alternate_names,
-            origin_gen,
-            typ,
-            stat,
-            gender,
-            level,
-            abilities,
-            moves,
-        }
-    }
-}
-
-impl IntoDocument for Pokemon {
-    fn into_doc(self) -> Document {
-        doc! {
-            "pokedex_id": self.pokedex_id as u32,
-            "name": self.name,
-            "alternate_names": self.alternate_names.as_slice(),
-            "origin_gen": self.origin_gen.to_string(),
-            "typ": self.typ.to_string(),
-            "gender": self.gender.to_string(),
-            "level": self.level.map_or(100_u32, |l| l as u32),
-            "abilities": self.abilities.to_string(),
-            "moves": self.moves,
-        }
-    }
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, FromRow)]
+pub struct PokemonSprites {
+    pub id: i32,
+    pub pokedex: i32,
+    pub front_default: Option<String>,
+    pub front_shiny: Option<String>,
+    pub front_female: Option<String>,
+    pub front_shiny_female: Option<String>,
+    pub back_default: Option<String>,
+    pub back_shiny: Option<String>,
+    pub back_female: Option<String>,
+    pub back_shiny_female: Option<String>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }

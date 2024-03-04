@@ -1,31 +1,18 @@
-use mongodb::bson::doc;
-use serde::{Deserialize, Serialize};
+use crate::models::enums::types::Type;
+use chrono::{DateTime, Utc};
+use sqlx::prelude::FromRow;
 
-use super::traits::IntoDocument;
-
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, FromRow)]
 pub struct Move {
-    name: String,
-    description: String,
-    damage: Option<u8>,
-}
-
-impl Move {
-    fn new(name: String, description: String, damage: Option<u8>) -> Self {
-        Move {
-            name,
-            description,
-            damage,
-        }
-    }
-}
-
-impl IntoDocument for Move {
-    fn into_doc(self) -> mongodb::bson::Document {
-        doc! {
-            "name": self.name,
-            "description": self.description,
-            "damage": self.damage.unwrap_or(0) as u32,
-        }
-    }
+    pub id: i32,
+    pub name: String,
+    pub accuracy: Option<i32>,
+    pub effect_change: Option<i32>,
+    pub pp: Option<i32>,
+    pub priority: i32,
+    pub power: Option<i32>,
+    #[sqlx(rename = "type")]
+    pub type_: Type,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }

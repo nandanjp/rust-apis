@@ -1,50 +1,16 @@
-use mongodb::bson::{doc, oid::ObjectId};
-use serde::{Deserialize, Serialize};
+use chrono::{DateTime, Utc};
+use sqlx::prelude::FromRow;
 
-use super::traits::IntoDocument;
+use super::games::Generation;
 
-#[derive(Serialize, Deserialize, Debug)]
-pub enum Abilities {
-    AbilityPair(ObjectId, ObjectId),
-    AbilityTriple(ObjectId, ObjectId, ObjectId),
-    AbilitySingle(ObjectId),
-}
-
-impl Abilities {
-    pub fn to_string(&self) -> Vec<ObjectId> {
-        match self {
-            &Abilities::AbilitySingle(id) => vec![id.clone()],
-            &Abilities::AbilityPair(first, second) => vec![first.clone(), second.clone()],
-            &Abilities::AbilityTriple(first, second, third) => {
-                vec![first.clone(), second.clone(), third.clone()]
-            }
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, FromRow)]
 pub struct Ability {
-    name: String,
-    description: String,
-    is_hidden: bool,
-}
-
-impl Ability {
-    fn new(name: String, description: String, is_hidden: bool) -> Self {
-        Ability {
-            name,
-            description,
-            is_hidden,
-        }
-    }
-}
-
-impl IntoDocument for Ability {
-    fn into_doc(self) -> mongodb::bson::Document {
-        doc! {
-            "name": self.name,
-            "description": self.description,
-            "is_hidden": self.is_hidden,
-        }
-    }
+    pub id: i32,
+    pub name: String,
+    pub is_main_series: bool,
+    pub generation: Generation,
+    pub effect_entry: String,
+    pub effect_changes: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
