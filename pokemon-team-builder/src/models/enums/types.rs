@@ -32,6 +32,32 @@ pub enum TypeError {
     InvalidType { unknown: String },
 }
 
+impl Type {
+    pub fn no_damage_to(&self) -> TypeRelations {
+        TypeRelations::NoDamageTo(Vec::new())
+    }
+
+    pub fn half_damage_to(&self) -> TypeRelations {
+        TypeRelations::HalfDamageTo(Vec::new())
+    }
+
+    pub fn double_damage_to(&self) -> TypeRelations {
+        TypeRelations::DoubleDamageTo(Vec::new())
+    }
+
+    pub fn no_damage_from(&self) -> TypeRelations {
+        TypeRelations::NoDamageFrom(Vec::new())
+    }
+
+    pub fn half_damage_from(&self) -> TypeRelations {
+        TypeRelations::HalfDamageFrom(Vec::new())
+    }
+
+    pub fn double_damage_from(&self) -> TypeRelations {
+        TypeRelations::DoubleDamageFrom(Vec::new())
+    }
+}
+
 impl SerDeserEnum for Type {
     type Error = TypeError;
 
@@ -114,7 +140,7 @@ impl<'de> Visitor<'de> for TypeVisitor {
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
             formatter,
-            "attempting to convert the provided string into a pokemon 'Type'"
+            "trying to convert the provided string into the 'Type' type"
         )
     }
 

@@ -29,6 +29,13 @@ async fn main() {
         .expect(&format!(
             "failed to connect to the database using the the provided connection: {db_str}"
         ));
+
+    match sqlx::migrate!().run(&pool).await {
+        Ok(_) => tracing::debug!("Successfully ran the most recent migration!"),
+        Err(err) => tracing::debug!(
+            "Failed to run the most recent migration due to the following error: {err:#?}"
+        ),
+    }
     let port = std::env::var("PORT")
         .unwrap_or_else(|_| "3000".to_string())
         .parse::<u32>()
