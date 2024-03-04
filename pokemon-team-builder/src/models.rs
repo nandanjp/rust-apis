@@ -5,4 +5,6 @@ pub mod moves;
 pub mod moves_pokemon;
 pub mod pokemon;
 pub mod stats;
+pub mod team_pokemon;
+pub mod teams;
 pub mod user;
