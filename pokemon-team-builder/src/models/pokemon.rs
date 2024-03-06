@@ -26,7 +26,6 @@ pub struct Pokemon {
     pub is_mythical: bool,
     pub is_legendary: bool,
     pub types: Vec<Type>,
-    pub stats: Vec<i32>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -53,7 +52,6 @@ impl IntoSerial for Pokemon {
             is_mythical: self.is_mythical,
             is_legendary: self.is_legendary,
             types: self.types.clone(),
-            stats: self.stats.clone(),
             created_at: self.created_at.to_string(),
             updated_at: self.updated_at.to_string(),
         }
@@ -80,7 +78,6 @@ pub struct PokemonSerial {
     pub is_mythical: bool,
     pub is_legendary: bool,
     pub types: Vec<Type>,
-    pub stats: Vec<i32>,
     pub created_at: String,
     pub updated_at: String,
 }
