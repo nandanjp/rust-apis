@@ -1,6 +1,10 @@
 use std::time::Duration;
 
-use axum::{routing::get, Router};
+use axum::{
+    routing::{delete, get, post, put},
+    Router,
+};
+use handlers::users::{create_user, delete_user, get_all_users, get_user_by_id, update_user};
 use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -44,6 +48,8 @@ async fn main() {
         .await
         .expect("failed to retrieve a tcp listener: could not start up a server on the given port");
 
+    tracing::debug!("Now listening on port {port}");
+
     let app = Router::new()
         .route(
             "/health",
@@ -56,7 +62,15 @@ async fn main() {
                 .nest("/ability", Router::new())
                 .nest("/move", Router::new())
                 .nest("/game", Router::new())
-                .nest("/user", Router::new()),
+                .nest(
+                    "/user",
+                    Router::new()
+                        .route("/", get(get_all_users))
+                        .route("/", post(create_user))
+                        .route("/:id", get(get_user_by_id))
+                        .route("/:id", put(update_user))
+                        .route("/:id", delete(delete_user)),
+                ),
         )
         .layer(tower_http::timeout::TimeoutLayer::new(Duration::from_secs(
             10,
