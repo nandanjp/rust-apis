@@ -12,6 +12,12 @@ use handlers::{
         create_generation, delete_generation, get_all_generations, get_generation_by_id,
         update_generation,
     },
+    moves::{create_move, delete_move, get_all_moves, get_move_by_id, update_move},
+    pokedex::{
+        create_pokedex, delete_pokedex, get_all_pokedexes, get_pokedex_by_id,
+        get_pokemon_from_pokedex, update_pokedex,
+    },
+    team::{create_team, delete_team, get_all_teams, get_team_by_id, get_users_teams, update_team},
     users::{create_user, delete_user, get_all_users, get_user_by_id, update_user},
 };
 use sqlx::postgres::PgPoolOptions;
@@ -77,7 +83,15 @@ async fn main() {
                         .route("/:id", put(update_ability))
                         .route("/:id", delete(delete_ability)),
                 )
-                .nest("/move", Router::new())
+                .nest(
+                    "/move",
+                    Router::new()
+                        .route("/", get(get_all_moves))
+                        .route("/", post(create_move))
+                        .route("/:id", get(get_move_by_id))
+                        .route("/:id", put(update_move))
+                        .route("/:id", delete(delete_move)),
+                )
                 .nest(
                     "/game",
                     Router::new()
@@ -86,6 +100,26 @@ async fn main() {
                         .route("/:id", get(get_generation_by_id))
                         .route("/:id", put(update_generation))
                         .route("/:id", delete(delete_generation)),
+                )
+                .nest(
+                    "/pokedex",
+                    Router::new()
+                        .route("/", get(get_all_pokedexes))
+                        .route("/", post(create_pokedex))
+                        .route("/:id", get(get_pokedex_by_id))
+                        .route("/:id", put(update_pokedex))
+                        .route("/:id", delete(delete_pokedex))
+                        .route("/:id/pokemon", get(get_pokemon_from_pokedex)),
+                )
+                .nest(
+                    "/team",
+                    Router::new()
+                        .route("/", get(get_all_teams))
+                        .route("/", post(create_team))
+                        .route("/:id", get(get_team_by_id))
+                        .route("/:id", put(update_team))
+                        .route("/:id", delete(delete_team))
+                        .route("/:id/pokemon", get(get_users_teams)),
                 )
                 .nest(
                     "/user",

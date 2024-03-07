@@ -160,9 +160,10 @@ impl GeneralAdaptor for GenerationService {
         match update {
             UpdateGeneration { name: Some(name), main_region: Some(region), types: Some(types) } => {
                 sqlx::query!(
-                    r#"update generation set name = $1, main_region = $2 where id = $3 returning id, name, main_region as "main_region: Region", types as "types: Vec<Type>", created_at, updated_at"#,
+                    r#"update generation set name = $1, main_region = $2, types = $3 where id = $4 returning id, name, main_region as "main_region: Region", types as "types: Vec<Type>", created_at, updated_at"#,
                     name,
                     region as Region,
+                    types as Vec<Type>,
                     id
                 ).fetch_one(pool).await.map(|g| Generation {id: g.id, name: g.name, main_region: g.main_region, types: g.types.unwrap(), created_at: g.created_at.unwrap(), updated_at: g.updated_at.unwrap()}).map_err(|e| GenerationError(format!("failed to update the generation with id = {id} due to the following error: {e:#?}")))
             },

@@ -64,8 +64,8 @@ create table if not exists pokemon (
     id serial primary key,
     name varchar(100) not null unique,
     base_experience integer,
-    height real,
-    weight real,
+    height real not null,
+    weight real not null,
     primary_type Type not null,
     secondary_type Type,
     primary_ability integer not null,
@@ -78,7 +78,6 @@ create table if not exists pokemon (
     form_names varchar(100)[],
     is_mythical boolean default false,
     is_legendary boolean default false,
-    types Type[] not null,
     created_at timestamptz default current_timestamp,
     updated_at timestamptz default current_timestamp,
 
