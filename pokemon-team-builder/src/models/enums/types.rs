@@ -1,4 +1,5 @@
 use serde::{de::Visitor, Deserialize, Serialize};
+use sqlx::postgres::{PgHasArrayType, PgTypeInfo};
 use thiserror::Error;
 
 use crate::utils::traits::SerDeserEnum;
@@ -24,6 +25,15 @@ pub enum Type {
     Dragon,
     Dark,
     Fairy,
+}
+
+impl PgHasArrayType for Type {
+    fn array_compatible(ty: &sqlx::postgres::PgTypeInfo) -> bool {
+        true
+    }
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        PgTypeInfo::with_name("_type")
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Error)]

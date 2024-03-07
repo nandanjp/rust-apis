@@ -4,7 +4,16 @@ use axum::{
     routing::{delete, get, post, put},
     Router,
 };
-use handlers::users::{create_user, delete_user, get_all_users, get_user_by_id, update_user};
+use handlers::{
+    abilities::{
+        create_ability, delete_ability, get_ability_by_id, get_all_abilities, update_ability,
+    },
+    games::{
+        create_generation, delete_generation, get_all_generations, get_generation_by_id,
+        update_generation,
+    },
+    users::{create_user, delete_user, get_all_users, get_user_by_id, update_user},
+};
 use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -59,9 +68,25 @@ async fn main() {
             "/api",
             Router::new()
                 .nest("/pokemon", Router::new())
-                .nest("/ability", Router::new())
+                .nest(
+                    "/ability",
+                    Router::new()
+                        .route("/", get(get_all_abilities))
+                        .route("/", post(create_ability))
+                        .route("/:id", get(get_ability_by_id))
+                        .route("/:id", put(update_ability))
+                        .route("/:id", delete(delete_ability)),
+                )
                 .nest("/move", Router::new())
-                .nest("/game", Router::new())
+                .nest(
+                    "/game",
+                    Router::new()
+                        .route("/", get(get_all_generations))
+                        .route("/", post(create_generation))
+                        .route("/:id", get(get_generation_by_id))
+                        .route("/:id", put(update_generation))
+                        .route("/:id", delete(delete_generation)),
+                )
                 .nest(
                     "/user",
                     Router::new()
