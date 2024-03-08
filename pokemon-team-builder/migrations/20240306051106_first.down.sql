@@ -19,3 +19,4 @@ drop type if exists Region;
 drop type if exists Stat;
 drop type if exists Tier;
 drop type if exists Type;
+
